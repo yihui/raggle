@@ -58,6 +58,7 @@ shinyServer(function(input, output) {
     res = as.matrix(res)
     print(1 - diag(res) / c(table(testLabels)))
     err = 1 - sum(diag(res)) / length(testLabels)
+    leader = as.matrix(read.csv(leaderFile))
     leader[group, na[1]] = err
     write.csv(leader, leaderFile, row.names = FALSE)
     cat('\nOverall Error Rate: ', err, '\n\n')

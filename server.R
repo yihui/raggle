@@ -2,7 +2,6 @@ library(shiny)
 
 config = './config/' # path to configuration files
 testLabels = readLines(file.path(config, 'TestLabels'))
-testData = read.csv(file.path(config, 'TestData'))
 password = readLines(file.path(config, 'password'))
 leaderFile = file.path(config, 'leader')
 
@@ -24,9 +23,14 @@ shinyServer(function(input, output) {
   })
 
   output$results = reactivePrint(function() {
+    if (file.exists('00LOCK'))
+      stop('Another group is submitting their predictions.',
+           'Please wait a second, refresh this page and retry.')
     group = as.integer(input$group)
     if (group == 0) return(print_leader())
     if (password[group] != input$pass) return(cat('Please input your password'))
+    file.create('00LOCK')  # lock the system temporarily
+    on.exit(file.remove('00LOCK'))
     leader = as.matrix(read.csv(leaderFile))
     g = leader[group, ]
     na = which(is.na(g))
@@ -34,37 +38,27 @@ shinyServer(function(input, output) {
       cat('Sorry but you have used all the attempts. Take a rest now.\n\n')
       return(print_leader())
     }
-    if (is.null(input$rdata)) return(cat('Please upload your .RData file'))
-    if (!grepl('\\.RData$', input$rdata$name, ignore.case = TRUE))
-      stop('The file extension must be .RData!')
-    # make sure the global environment is clean
-    rm(list = ls(globalenv(), all.names = TRUE), envir = globalenv())
-    load(input$rdata$datapath, envir = globalenv())
-    if (!exists('predict_fun', envir = globalenv(), mode = 'function'))
-      stop('There is no function called predict_fun() in your workspace!')
-    if (exists('required_pkgs', envir = globalenv(), mode = 'character')) {
-      pkgs = get('required_pkgs', envir = globalenv(), mode = 'character')
-      for (i in setdiff(pkgs, .packages(TRUE))) install.packages(i)
-      sapply(pkgs, library, character.only = TRUE)
-    }
-    # save a copy of the R data image
+    if (is.null(input$rdata)) return(cat('Please upload your prediction file'))
+    # save a copy of the upload
     file.copy(input$rdata$datapath,
-              file.path(config, sprintf('Group%dAttempt%d.RData', group, ncol(leader) - length(na) + 1)))
-    pred = factor(predict_fun(testData), levels = unique(testLabels))
+              file.path(config, sprintf('Group%dAttempt%d.txt', group, ncol(leader) - length(na) + 1)))
+    pred = factor(readLines(input$rdata$datapath), levels = unique(testLabels))
+    if (any(is.na(pred)))
+      stop('your predictions must only contain these labels: ',
+      paste(unique(testLabels), collapse = ', '))
     res = table(testLabels, pred, dnn = c('Prediction', 'True Labels'))
     cat('Confusion Matrix\n\n')
     print(res)
     cat('\nPrediction Errors by Class\n\n')
     res = as.matrix(res)
-    print(1 - diag(res) / c(table(testLabels)))
-    err = 1 - sum(diag(res)) / length(testLabels)
+    err = 1 - diag(res) / c(table(testLabels))
+    print(err)
+    err = mean(err)
+    cat('\nAverage Prediction Error: ', err, '\n\n')
     leader = as.matrix(read.csv(leaderFile))
     leader[group, na[1]] = err
     write.csv(leader, leaderFile, row.names = FALSE)
-    cat('\nOverall Error Rate: ', err, '\n\n')
     print_leader()
-    cat('\nSession Info:\n\n')
-    print(sessionInfo())
   })
 
 })

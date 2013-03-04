@@ -19,8 +19,11 @@ fit = rpart(Species ~ ., data = df)
 # the test set
 testData = read.csv('http://dl.dropbox.com/u/15335397/misc/TestData')
 
-# prediction
+# prediction (it is a factor by default)
 pred_labels = predict(fit, newdata = testData, type = 'class')
+# convert to characters
+pred_labels = as.character(pred_labels)
+pred_labels
 ```
 
 Once we have got the predictions, we can write them into a text file and upload it to the server.

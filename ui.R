@@ -6,7 +6,7 @@ shinyUI(pageWithSidebar(
 
   sidebarPanel(
     h3(textOutput('howdy')),
-    selectInput('group', 'Please select your group number', 0:12),
+    selectInput('group', 'Please select your group number', 0:8),
     conditionalPanel('input.group != 0',
                      textInput('pass', 'Group password'),
                      fileInput('rdata', 'Upload your predictions (text labels)')),

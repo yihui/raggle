@@ -16,13 +16,13 @@ print_leader = function() {
 }
 shinyServer(function(input, output) {
 
-  output$howdy = reactiveText(function() {
+  output$howdy = renderText({
     if (input$group == '0') return()
     attempts = sum(is.na(as.matrix(read.csv(leaderFile))[as.integer(input$group), ]))
     sprintf('Howdy, Group %s (%s attempts left)', input$group, attempts)
   })
 
-  output$results = reactivePrint(function() {
+  output$results = renderPrint({
     if (file.exists('00LOCK'))
       stop('Another group is submitting their predictions.',
            'Please wait a second, refresh this page and retry.')

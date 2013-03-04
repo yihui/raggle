@@ -5,35 +5,25 @@ raggle
 
 ## How it works
 
-The participant simply uploads a text file which contains the prediction labels corresponding to the test set (please be very careful about the order of the labels; the i-th label in your prediction file must correspond to the i-th row in the test set).
+The participant uploads a CSV file which contains the prediction labels corresponding to the id's of the test cases. For example, a file `Group1Attempt1.csv` like this:
 
-As one simple example, suppose you were given the training set [`TrainData`](https://dl.dropbox.com/u/15335397/misc/TrainData) which is a CSV file, and you built a classification tree on it:
-
-```r
-# the training set
-df = read.csv('http://dl.dropbox.com/u/15335397/misc/TrainData')
-str(df)
-library(rpart)
-fit = rpart(Species ~ ., data = df)
-
-# the test set
-testData = read.csv('http://dl.dropbox.com/u/15335397/misc/TestData')
-
-# prediction (it is a factor by default)
-pred_labels = predict(fit, newdata = testData, type = 'class')
-# convert to characters
-pred_labels = as.character(pred_labels)
-pred_labels
+```
+"id","genre"
+11111111, "rock"
+1234567, "jazz"
+....
 ```
 
-Once we have got the predictions, we can write them into a text file and upload it to the server.
+This file can be created by `write.csv()`, e.g.
 
 ```r
-writeLines(pred_labels, 'Group1Attempt1.txt')
+write.csv(data.frame(id = your_id, genre = your_prediction), 'Group1Attempt1.csv')
 ```
 
-I wrote my labels in a text file named `Group1Attempt1.txt`, and this is the (only) file to upload. Besure to check if your predictions are character labels -- some R functions/packages may give you a matrix of probabilities instead.
+Be sure that your id's and predictions match with each other. This app will find your predictions by id's and compare them to the true labels.
 
 ## The web interface
 
-The app is deployed at http://thyme.stat.iastate.edu:8100 Choose your group number, fill out the password (sent from the instructor) and upload your prediction file. Then you will see your error rate on the right. When an error occurs, you will see the error message on the right as well.
+The app is deployed at http://thyme.stat.iastate.edu:8100 Choose your group number, fill out the password (sent from the instructor) and upload your prediction file. Then you will see your prediction error rate on the right.
+
+When an R error occurs, you will see the error message in red on the right as well.

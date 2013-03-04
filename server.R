@@ -1,7 +1,8 @@
 library(shiny)
 
 config = './config/' # path to configuration files
-testLabels = readLines(file.path(config, 'TestLabels'))
+testLabels = read.csv(file.path(config, 'TestLabels'))
+testLabels = testLabels[order(testLabels$id), ] # order by id
 password = readLines(file.path(config, 'password'))
 leaderFile = file.path(config, 'leader')
 
@@ -42,14 +43,22 @@ shinyServer(function(input, output) {
     # save a copy of the upload
     file.copy(input$rdata$datapath,
               file.path(config, sprintf('Group%dAttempt%d.txt', group, ncol(leader) - length(na) + 1)))
-    pred = factor(readLines(input$rdata$datapath), levels = unique(testLabels))
-    if (length(pred) != length(testLabels))
+    pred = read.csv(input$rdata$datapath)
+    if (!identical(colnames(pred), c('id', 'genre')))
+      stop('the column names of your prediction file must be "id" and "genre"')
+    if (nrow(pred) != nrow(testLabels))
       stop('the length of labels is wrong; you are supposed to upload ',
            length(testLabels), ' labels')
-    if (any(is.na(pred)))
+    if (any(duplicated(pred$id)))
+      stop("there are duplicate id's in your file: ", paste(pred$id[duplicated(pred$id)], collapse = ', '))
+    pred = pred[order(pred$id), ]
+    if (!all(pred$id == testLabels$id))
+      stop("some id's are not in the test set: ", paste(setdiff(pred$id, testLabels$id), collapse = ', '))
+    match(pred, )
+    if (!identical(levels(pred$genre), levels(testLabels$genre)))
       stop('your predictions must only contain these labels: ',
-      paste(unique(testLabels), collapse = ', '))
-    res = table(testLabels, pred, dnn = c('Prediction', 'True Labels'))
+      paste(levels(testLabels$genre), collapse = ', '))
+    res = table(testLabels$genre, pred$genre, dnn = c('Prediction', 'True Labels'))
     cat('Confusion Matrix\n\n')
     print(res)
     cat('\nPrediction Errors by Class\n\n')

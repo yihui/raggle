@@ -11,8 +11,8 @@ shinyUI(pageWithSidebar(
                      textInput('pass', 'Group password'),
                      fileInput('rdata', 'Upload your predictions (text labels)')),
     helpText('The leader board shows the prediction error rates. Group numbers
-             are in the first column. NA means no attempt has been made.
-             More info <a href="https://github.com/yihui/raggle#readme">here</a>.'),
+             are in the first column. NA means no attempt has been made.',
+             a(href='https://github.com/yihui/raggle#readme', 'More info here.')),
     div(img(src = 'http://www.kiss925.com/files/365984-gangnam-style.jpg'))
   ),
 

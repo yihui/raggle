@@ -43,6 +43,9 @@ shinyServer(function(input, output) {
     file.copy(input$rdata$datapath,
               file.path(config, sprintf('Group%dAttempt%d.txt', group, ncol(leader) - length(na) + 1)))
     pred = factor(readLines(input$rdata$datapath), levels = unique(testLabels))
+    if (length(pred) != length(testLabels))
+      stop('the length of labels is wrong; you are supposed to upload ',
+           length(testLabels), ' labels')
     if (any(is.na(pred)))
       stop('your predictions must only contain these labels: ',
       paste(unique(testLabels), collapse = ', '))

@@ -17,7 +17,8 @@ The participant uploads a CSV file which contains the prediction labels correspo
 This file can be created by `write.csv()`, e.g.
 
 ```r
-write.csv(data.frame(id = your_id, genre = your_prediction), 'Group1Attempt1.csv')
+write.csv(data.frame(id = your_id, genre = your_prediction), 'Group1Attempt1.csv',
+          row.names = FALSE)
 ```
 
 Be sure that your id's and predictions match with each other. This app will find your predictions by id's and compare them to the true labels.

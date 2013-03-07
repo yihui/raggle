@@ -62,7 +62,7 @@ shinyServer(function(input, output) {
     print(res)
     cat('\nPrediction Errors by Class\n\n')
     res = as.matrix(res)
-    err = 1 - diag(res) / c(table(testLabels))
+    err = 1 - diag(res) / c(table(testLabels$genre))
     print(err)
     err = mean(err)
     cat('\nAverage Prediction Error: ', err, '\n\n')

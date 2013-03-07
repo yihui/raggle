@@ -57,7 +57,7 @@ shinyServer(function(input, output) {
     if (!identical(levels(pred$genre), levels(testLabels$genre)))
       stop('your predictions must only contain these labels: ',
       paste(levels(testLabels$genre), collapse = ', '))
-    res = table(testLabels$genre, pred$genre, dnn = c('Prediction', 'True Labels'))
+    res = table(testLabels$genre, pred$genre, dnn = c('True Labels', 'Prediction'))
     cat('Confusion Matrix\n\n')
     print(res)
     cat('\nPrediction Errors by Class\n\n')

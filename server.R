@@ -48,7 +48,7 @@ shinyServer(function(input, output) {
       stop('the column names of your prediction file must be "id" and "genre"')
     if (nrow(pred) != nrow(testLabels))
       stop('the length of labels is wrong; you are supposed to upload ',
-           length(testLabels), ' labels')
+           nrow(testLabels), ' labels')
     if (any(duplicated(pred$id)))
       stop("there are duplicate id's in your file: ", paste(pred$id[duplicated(pred$id)], collapse = ', '))
     pred = pred[order(pred$id), ]

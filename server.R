@@ -54,7 +54,6 @@ shinyServer(function(input, output) {
     pred = pred[order(pred$id), ]
     if (!all(pred$id == testLabels$id))
       stop("some id's are not in the test set: ", paste(setdiff(pred$id, testLabels$id), collapse = ', '))
-    match(pred, )
     if (!identical(levels(pred$genre), levels(testLabels$genre)))
       stop('your predictions must only contain these labels: ',
       paste(levels(testLabels$genre), collapse = ', '))

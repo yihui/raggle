@@ -18,7 +18,7 @@ print_leader = function() {
 
   cat('\n\nBest Error Rates by Class:\n\n')
   classerr = read.csv(classerr)
-  print(classerr, digits = 4)
+  print(classerr, digits = 4, row.names = FALSE)
 }
 shinyServer(function(input, output) {
 

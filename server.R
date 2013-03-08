@@ -5,6 +5,7 @@ testLabels = read.csv(file.path(config, 'TestLabels'))
 testLabels = testLabels[order(testLabels$id), ] # order by id
 password = readLines(file.path(config, 'password'))
 leaderFile = file.path(config, 'leader')
+classerr = file.path(config, 'classerror')
 
 print_leader = function() {
   cat('Leader Board (ordered by the last attempt):\n\n')
@@ -14,6 +15,9 @@ print_leader = function() {
     tail(x[!is.na(x)], 1)
   }))
   print(leader[idx, ], digits = 4)
+
+  classerr = read.csv(classerr)
+  print(classerr, digits = 4)
 }
 shinyServer(function(input, output) {
 
@@ -64,6 +68,13 @@ shinyServer(function(input, output) {
     res = as.matrix(res)
     err = 1 - diag(res) / c(table(testLabels$genre))
     print(err)
+    minclasserr = as.matrix(read.csv(classerr))
+    for (i in 1:5)
+      if (err[i] < minclasserr[i,2]) {
+        minclasserr[i,2] = err[i]
+        minclasserr[i,3] = group
+      }
+    write.csv(minclasserr, classerr, row.names = FALSE)
     err = mean(err)
     cat('\nAverage Prediction Error: ', err, '\n\n')
     leader = as.matrix(read.csv(leaderFile))

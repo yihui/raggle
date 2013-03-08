@@ -41,7 +41,7 @@ shinyServer(function(input, output) {
     }
     if (is.null(input$rdata)) return(cat('Please upload your prediction file'))
     # save a copy of the upload
-    file.copy(input$rdata$datapath,
+    file.copy(input$rdata$datapath, overwrite = TRUE,
               file.path(config, sprintf('Group%dAttempt%d.txt', group, ncol(leader) - length(na) + 1)))
     pred = read.csv(input$rdata$datapath)
     if (!identical(colnames(pred), c('id', 'genre')))

@@ -16,7 +16,7 @@ print_leader = function() {
   }))
   print(leader[idx, ], digits = 4)
 
-  cat('\n\nBest Error Rates by Class:\n\n')
+  cat('\n\nBest Error Rates by Genre:\n\n')
   classerr = read.csv(classerr)
   print(classerr, digits = 4, row.names = FALSE)
 }

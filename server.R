@@ -8,11 +8,11 @@ leaderFile = file.path(config, 'leader')
 classerr = file.path(config, 'classerror')
 
 print_leader = function() {
-  cat('Leader Board (ordered by the last attempt):\n\n')
+  cat('Leader Board (ordered by the best attempt of each group):\n\n')
   leader = read.csv(leaderFile)
   idx = order(apply(leader, 1, function(x) {
     if (all(is.na(x))) return(1)
-    tail(x[!is.na(x)], 1)
+    min(x, na.rm = TRUE)
   }))
   print(leader[idx, ], digits = 4)
 
